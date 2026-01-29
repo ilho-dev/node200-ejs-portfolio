@@ -33,10 +33,15 @@ app.post("/thanks", async (req, res) => {
     }
 
     const { GoogleAuth } = require("google-auth-library");
-    const auth = new GoogleAuth({
-      credentials: JSON.parse(serviceAccountJson),
-      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-    });
+    const creds = JSON.parse(serviceAccountJson);
+
+console.log("Using service account:", creds.client_email);
+
+const auth = new GoogleAuth({
+  credentials: creds,
+  scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+});
+
 
     const sheets = google.sheets({ version: "v4", auth });
 
