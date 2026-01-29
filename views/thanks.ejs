@@ -1,16 +1,25 @@
 <html>
   <head>
     <title>Thanks</title>
+    <link rel="stylesheet" href="/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <h1>Thank you <%= contact.firstName %> <%= contact.lastName %></h1>
+    <div class="container">
+      <div class="nav">
+        <div class="brand">Ilho Portfolio</div>
+        <div>
+          <a href="/">Home</a>
+          <span class="small"> · </span>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
 
-    <p>
-      Thank you <%= contact.firstName %> <%= contact.lastName %>.
-    </p>
+      <div class="card">
+        <h1>Thank you <%= contact.firstName %> <%= contact.lastName %></h1>
 
-    <p>We will reach you at: <%= contact.email %></p>
-
-    <p><a href="/">Back home</a></p>
+        <p>We will reach you at: <%= contact.email %></p>
+      </div>
+    </div>
   </body>
 </html>

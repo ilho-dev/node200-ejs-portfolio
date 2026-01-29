@@ -1,65 +1,78 @@
 <html>
   <head>
     <title>Contact Ilho</title>
+    <link rel="stylesheet" href="/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <h1>Contact</h1>
-
-    <% if (errors && errors.length) { %>
-      <div>
-        <p>Please fix the following:</p>
-        <ul>
-          <% errors.forEach(function (error) { %>
-            <li><%= error %></li>
-          <% }); %>
-        </ul>
-      </div>
-    <% } %>
-
-    <form action="/thanks" method="POST">
-      <div>
-        <label for="firstName">First Name:</label>
-        <input
-          id="firstName"
-          name="firstName"
-          type="text"
-          required
-          value="<%= values && values.firstName ? values.firstName : "" %>"
-        />
+    <div class="container">
+      <div class="nav">
+        <div class="brand">Ilho Portfolio</div>
+        <div>
+          <a href="/">Home</a>
+          <span class="small"> · </span>
+          <a href="/contact">Contact</a>
+        </div>
       </div>
 
-      <div>
-        <label for="lastName">Last Name:</label>
-        <input
-          id="lastName"
-          name="lastName"
-          type="text"
-          required
-          value="<%= values && values.lastName ? values.lastName : "" %>"
-        />
-      </div>
+      <div class="card">
+        <h1>Contact</h1>
 
-      <div>
-        <label for="email">Email:</label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          value="<%= values && values.email ? values.email : "" %>"
-        />
-      </div>
+        <% if (errors && errors.length) { %>
+          <div class="error">
+            <p>Please fix the following:</p>
+            <ul>
+              <% errors.forEach(function (error) { %>
+                <li><%= error %></li>
+              <% }); %>
+            </ul>
+          </div>
+        <% } %>
 
-      <div style="display:none;" aria-hidden="true">
-        <label for="companyWebsite">Company Website</label>
-        <input id="companyWebsite" name="companyWebsite" type="text" tabindex="-1" autocomplete="off" />
-      </div>
+        <form action="/thanks" method="POST" class="form">
+          <div>
+            <label for="firstName">First Name:</label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              required
+              value="<%= values && values.firstName ? values.firstName : "" %>"
+            />
+          </div>
 
-      <div>
-        <input type="submit" value="Send" />
-      </div>
-    </form>
+          <div>
+            <label for="lastName">Last Name:</label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              required
+              value="<%= values && values.lastName ? values.lastName : "" %>"
+            />
+          </div>
 
-    <p><a href="/">Back home</a></p>
+          <div>
+            <label for="email">Email:</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value="<%= values && values.email ? values.email : "" %>"
+            />
+          </div>
+
+          <div style="display:none;" aria-hidden="true">
+            <label for="companyWebsite">Company Website</label>
+            <input id="companyWebsite" name="companyWebsite" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div>
+            <input type="submit" value="Send" />
+          </div>
+        </form>
+      </div>
+    </div>
   </body>
 </html>
