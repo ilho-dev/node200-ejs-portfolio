@@ -25,7 +25,7 @@ app.get("/contact", (req, res) => {
 
 app.post("/thanks", async (req, res) => {
   try {
-    const SPREADSHEET_ID = "1n6C-3ddkxs-r_gaG8TYOIC0dqm2DMKliObqmsshjI_Q";
+    const SPREADSHEET_ID = "1n6C-3ddkxs-r_gaG8TYOICOdqm2DMKliObqmsshjI_Q";
 
     const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
     if (!serviceAccountJson) {
