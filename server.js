@@ -1,6 +1,5 @@
 const { google } = require("googleapis");
 const { GoogleAuth } = require("google-auth-library");
-const fs = require("fs");
 const path = require("path");
 
 const express = require("express");
@@ -10,33 +9,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const staticRootFromDir = path.join(__dirname, "public");
-const staticRootFromCwd = path.join(process.cwd(), "public");
-const staticRoot = fs.existsSync(staticRootFromDir)
-  ? staticRootFromDir
-  : staticRootFromCwd;
-
-console.log(
-  `[static] __dirname=${__dirname} cwd=${process.cwd()} ` +
-    `dirRoot=${staticRootFromDir} cwdRoot=${staticRootFromCwd} using=${staticRoot}`
-);
-
-app.use((req, res, next) => {
-  console.log(`[req] ${req.method} ${req.path}`);
-  next();
-});
-
-app.use(express.static(staticRoot));
-
-app.use((req, res, next) => {
-  if (req.path === "/styles.css") {
-    const resolvedStyles = path.join(staticRoot, "styles.css");
-    console.log(
-      `[styles] fallthrough resolved=${resolvedStyles} exists=${fs.existsSync(resolvedStyles)}`
-    );
-  }
-  next();
-});
+app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 
@@ -135,7 +108,6 @@ app.get("/sheets-auth", (req, res) => {
 });
 
 app.use((req, res) => {
-  console.log(`[404] ${req.method} ${req.path}`);
   res.status(404).send("404 Not Found");
 });
 
