@@ -1,7 +1,5 @@
-const fs = require("fs");
-const readline = require("readline");
-const { GoogleAuth } = require("google-auth-library");
 const { google } = require("googleapis");
+const { GoogleAuth } = require("google-auth-library");
 
 const express = require("express");
 const morgan = require("morgan");
@@ -20,34 +18,65 @@ app.get("/", (req, res) => {
 });
 
 app.get("/contact", (req, res) => {
-  res.render("contact");
+  res.render("contact", { errors: [], values: {} });
 });
 
 app.post("/thanks", async (req, res) => {
+  const values = {
+    firstName: req.body.firstName || "",
+    lastName: req.body.lastName || "",
+    email: req.body.email || "",
+  };
+
+  const honeypotValue = req.body.companyWebsite || "";
+  if (honeypotValue.trim()) {
+    return res.render("thanks", { contact: values });
+  }
+
+  const errors = [];
+  if (!values.firstName.trim()) {
+    errors.push("First name is required.");
+  }
+  if (!values.lastName.trim()) {
+    errors.push("Last name is required.");
+  }
+  if (!values.email.trim()) {
+    errors.push("Email is required.");
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).render("contact", { errors, values });
+  }
+
   try {
     const SPREADSHEET_ID = "1n6C-3ddkxs-r_gaG8TYOICOdqm2DMKliObqmsshjI_Q";
 
     const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
     if (!serviceAccountJson) {
-      return res.status(500).send("Missing GOOGLE_SERVICE_ACCOUNT_JSON");
+      return res
+        .status(500)
+        .render("contact", {
+          errors: ["Server is missing Google Sheets credentials."],
+          values,
+        });
     }
 
-    const { GoogleAuth } = require("google-auth-library");
     const creds = JSON.parse(serviceAccountJson);
+    if (creds && creds.client_email) {
+      console.log(`Using Sheets service account: ${creds.client_email}`);
+    }
 
-
-const auth = new GoogleAuth({
-  credentials: creds,
-  scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-});
-
+    const auth = new GoogleAuth({
+      credentials: creds,
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+    });
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    const values = [[
-      req.body.firstName,
-      req.body.lastName,
-      req.body.email,
+    const sheetValues = [[
+      values.firstName,
+      values.lastName,
+      values.email,
       new Date().toISOString(),
     ]];
 
@@ -55,13 +84,16 @@ const auth = new GoogleAuth({
       spreadsheetId: SPREADSHEET_ID,
       range: "Sheet1!A:D",
       valueInputOption: "USER_ENTERED",
-      resource: { values },
+      resource: { values: sheetValues },
     });
 
-    res.render("thanks", { contact: req.body });
+    res.render("thanks", { contact: values });
   } catch (err) {
     console.error("Sheets error:", err);
-    res.status(500).send("Failed to save contact");
+    res.status(500).render("contact", {
+      errors: ["Sorry, we could not save your message. Please try again."],
+      values,
+    });
   }
 });
 

@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,6 +19,9 @@
     "url": "https://github.com/ilho-dev/node200-ejs-portfolio/issues"
   },
   "homepage": "https://github.com/ilho-dev/node200-ejs-portfolio#readme",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "body-parser": "^2.2.2",
     "ejs": "^4.0.1",
