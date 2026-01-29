@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ilho-dev/node200-ejs-portfolio.git"
@@ -22,6 +22,7 @@
     "body-parser": "^2.2.2",
     "ejs": "^4.0.1",
     "express": "^5.2.1",
+    "googleapis": "^39.2.0",
     "morgan": "^1.10.1"
   }
 }
