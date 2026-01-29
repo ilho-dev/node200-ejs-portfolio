@@ -35,7 +35,6 @@ app.post("/thanks", async (req, res) => {
     const { GoogleAuth } = require("google-auth-library");
     const creds = JSON.parse(serviceAccountJson);
 
-console.log("Using service account:", creds.client_email);
 
 const auth = new GoogleAuth({
   credentials: creds,
