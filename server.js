@@ -1,5 +1,6 @@
 const { google } = require("googleapis");
 const { GoogleAuth } = require("google-auth-library");
+const path = require("path");
 
 const express = require("express");
 const morgan = require("morgan");
@@ -7,6 +8,8 @@ const bodyParser = require("body-parser");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 
