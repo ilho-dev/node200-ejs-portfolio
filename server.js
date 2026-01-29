@@ -1,5 +1,6 @@
 const fs = require("fs");
 const readline = require("readline");
+const { GoogleAuth } = require("google-auth-library");
 const { google } = require("googleapis");
 
 const express = require("express");
@@ -22,59 +23,21 @@ app.get("/contact", (req, res) => {
   res.render("contact");
 });
 
-app.post("/thanks", (req, res) => {
-  const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
-  const TOKEN_PATH = "token.json";
-  const SPREADSHEET_ID = "1n6C-3ddkxs-r_gaG8TYOIC0dqm2DMKliObqmsshjI_Q";
+app.post("/thanks", async (req, res) => {
+  try {
+    const SPREADSHEET_ID = "1n6C-3ddkxs-r_gaG8TYOIC0dqm2DMKliObqmsshjI_Q";
 
-  fs.readFile("credentials.json", (err, content) => {
-    if (err) {
-      console.error("Error loading credentials:", err);
-      return res.status(500).send("Server auth error");
+    const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+    if (!serviceAccountJson) {
+      return res.status(500).send("Missing GOOGLE_SERVICE_ACCOUNT_JSON");
     }
-    authorize(JSON.parse(content), appendToSheet);
-  });
 
-  function authorize(credentials, callback) {
-    const { client_secret, client_id, redirect_uris } = credentials.web;
-    const oAuth2Client = new google.auth.OAuth2(
-      client_id,
-      client_secret,
-      redirect_uris[0]
-    );
-
-    fs.readFile(TOKEN_PATH, (err, token) => {
-      if (err) return getNewToken(oAuth2Client, callback);
-      oAuth2Client.setCredentials(JSON.parse(token));
-      callback(oAuth2Client);
-    });
-  }
-
-  function getNewToken(oAuth2Client, callback) {
-    const authUrl = oAuth2Client.generateAuthUrl({
-      access_type: "offline",
-      scope: SCOPES,
+    const { GoogleAuth } = require("google-auth-library");
+    const auth = new GoogleAuth({
+      credentials: JSON.parse(serviceAccountJson),
+      scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
-    console.log("Authorize this app by visiting:", authUrl);
-
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
-    rl.question("Enter the code from that page here: ", (code) => {
-      rl.close();
-      oAuth2Client.getToken(code, (err, token) => {
-        if (err) return console.error("Token error", err);
-        oAuth2Client.setCredentials(token);
-        fs.writeFile(TOKEN_PATH, JSON.stringify(token), () => {});
-        callback(oAuth2Client);
-      });
-    });
-  }
-
-  function appendToSheet(auth) {
     const sheets = google.sheets({ version: "v4", auth });
 
     const values = [[
@@ -84,23 +47,20 @@ app.post("/thanks", (req, res) => {
       new Date().toISOString(),
     ]];
 
-    sheets.spreadsheets.values.append(
-      {
-        spreadsheetId: SPREADSHEET_ID,
-        range: "Sheet1!A:D",
-        valueInputOption: "USER_ENTERED",
-        resource: { values },
-      },
-      (err) => {
-        if (err) {
-          console.error("Sheets error:", err);
-          return res.status(500).send("Failed to save contact");
-        }
-        res.render("thanks", { contact: req.body });
-      }
-    );
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: "Sheet1!A:D",
+      valueInputOption: "USER_ENTERED",
+      resource: { values },
+    });
+
+    res.render("thanks", { contact: req.body });
+  } catch (err) {
+    console.error("Sheets error:", err);
+    res.status(500).send("Failed to save contact");
   }
 });
+
 
 
 app.get("/sheets-auth", (req, res) => {
